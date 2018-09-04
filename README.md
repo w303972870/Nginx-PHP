@@ -1,3 +1,6 @@
+```
+docker pull registry.cn-hangzhou.aliyuncs.com/server_repertory/php:latest
+```
 ### 日志目录：/data/php/logs
 ### 默认php-fpm.conf：/etc/php7/php-fpm.conf
 ### 默认www.conf：/etc/php7/php-fpm.d/www.conf
