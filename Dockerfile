@@ -35,7 +35,7 @@ RUN sed -i 's@;daemonize = yes@daemonize = no@g' /etc/php7/php-fpm.conf \
     && sed -i "s|;error_log = php_errors.log|error_log = /data/php/logs/php_errors.log|" /etc/php7/php.ini  \ 
     && sed -i "s|;;opcache.enable=1|opcache.enable=1|" /etc/php7/php.ini  \ 
     && sed -i "s|;date.timezone =|date.timezone = ${TIMEZONE}|" /etc/php7/php.ini  \ 
-    #&& sed -i "s|listen = 127.0.0.1:9000|listen = /data/php/php.sock|" /etc/php7/php-fpm.d/www.conf   \ 
+    && sed -i "s|listen = 127.0.0.1:9000|listen = 9000|" /etc/php7/php-fpm.d/www.conf   \ 
     && sed -i "s|;pid = run/php-fpm7.pid|pid = run/php-fpm7.pid|" /etc/php7/php-fpm.conf
 
 

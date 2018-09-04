@@ -353,7 +353,7 @@ include=/etc/php7/php-fpm.d/*.conf
 [www]
 user = nobody
 group = nobody
-listen = /data/php/php.sock
+listen = 9000
 pm = dynamic
 pm.max_children = 5
 pm.start_servers = 2
