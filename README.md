@@ -7,6 +7,9 @@
 
 ### 开放端口：9000
 
+```
+docker run -dit -p 9000:9000 --net host -v /data/php/logs:/data/php/logs -v /data/php/etc/php-fpm.d/www.conf:/etc/php7/php-fpm.d/www.conf registry.cn-hangzhou.aliyuncs.com/server_repertory/php:latest
+```
 
 		**已安装和支持模块扩展**
 ```
