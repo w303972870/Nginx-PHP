@@ -1,5 +1,5 @@
 ```
-docker pull registry.cn-hangzhou.aliyuncs.com/server_repertory/php:latest
+docker pull w303972870/php
 ```
 ### 日志目录：/data/php/logs
 ### 默认php-fpm.conf：/etc/php7/php-fpm.conf
