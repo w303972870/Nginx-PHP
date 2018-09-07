@@ -11,7 +11,7 @@ docker pull w303972870/php
 ### 开放端口：9000
 
 ```
-docker run -dit -p 9000:9000 --net host -v /data/htdocs:/data/htdocs -v /data/php/logs:/data/php/logs -v /data/php/etc/php-fpm.d/www.conf:/etc/php7/php-fpm.d/www.conf registry.cn-hangzhou.aliyuncs.com/server_repertory/php:latest
+docker run -dit -p 9000:9000 --net host -v /data/htdocs:/data/htdocs -v /data/php/logs:/data/php/logs -v /data/php/etc/php-fpm.d/www.conf:/etc/php7/php-fpm.d/www.conf docker.io/w303972870/php
 ```
 
 		**已安装和支持模块扩展**
