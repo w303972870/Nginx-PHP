@@ -1,18 +1,69 @@
 ```
 docker pull w303972870/php
 ```
-### 日志目录：/data/php/logs
-### 默认php-fpm.conf：/etc/php7/php-fpm.conf
-### 默认www.conf：/etc/php7/php-fpm.d/www.conf
-### 默认php.ini：/etc/php7/php.ini
-### 默认缓存目录：/data/php/tmp/
 
-
+### PHP相关目录
+#### 日志目录：/data/php/logs
+#### 默认php-fpm.conf：/data/php/conf/php-fpm.conf
+#### 默认www.conf：/data/php/conf/php-fpm.d/www.conf
+#### 默认php.ini：/data/php/conf/php.ini
+#### 默认缓存目录：/data/php/tmp/
+#### session目录：/data/php/session/
 ### 开放端口：9000
 
+
+### Nginx相关目录
+#### 日志目录：/data/nginx/logs
+#### 默认php-fpm.conf：/data/nginx/conf/nginx.conf
+#### 默认*.conf目录：/data/nginx/conf/include/
+#### client_temp目录：/data/nginx/tmp/client_temp
+#### fastcgi_temp目录：/data/nginx/tmp/fastcgi_temp
+#### proxy_temp目录：/data/nginx/tmp/proxy_temp
+#### scgi_temp目录：/data/nginx/tmp/scgi_temp
+#### uwsgi_temp目录：/data/nginx/tmp/uwsgi_temp
+
 ```
-docker run -dit -p 9000:9000 --net host -v /data/htdocs:/data/htdocs -v /data/php/logs:/data/php/logs -v /data/php/etc/php-fpm.d/www.conf:/etc/php7/php-fpm.d/www.conf docker.io/w303972870/php
+### 开放端口：9000 80 443 9001
 ```
+
+
+### 启动命令
+```
+docker run -dit --net host -p 80:80 -p 443:443 -v /data/htdocs:/data/htdocs -v /data/nginx-php/nginx/:/data/nginx/ -v /data/nginx-php/php/:/data/php/ docker.io/w303972870/nginx-php
+```
+
+
+#### 我的配置/data/nginx-php目录结构
+
+```
+/data/nginx-php/
+├── nginx
+│   ├── conf
+│   │   ├── cert
+│   │   │   ├── hc.key
+│   │   │   └── hc.pem
+│   │   ├── include
+│   │   │   └── test.conf
+│   │   └── nginx.conf
+│   ├── logs
+│   └── tmp
+│       ├── client_temp
+│       ├── fastcgi_temp
+│       ├── proxy_temp
+│       ├── scgi_temp
+│       └── uwsgi_temp
+└── php
+    ├── conf
+    │   ├── php-fpm.conf
+    │   ├── php-fpm.d
+    │   │   └── www.conf
+    │   └── php.ini
+    ├── logs
+    ├── session
+    └── tmp
+```
+
+
 
 		**已安装和支持模块扩展**
 ```
