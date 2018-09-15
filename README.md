@@ -1,5 +1,5 @@
 ```
-docker pull w303972870/php
+docker pull w303972870/nginx-php
 ```
 
 ### PHP相关目录
@@ -22,6 +22,8 @@ docker pull w303972870/php
 #### scgi_temp目录：/data/nginx/tmp/scgi_temp
 #### uwsgi_temp目录：/data/nginx/tmp/uwsgi_temp
 
+
+
 ```
 ### 开放端口：9000 80 443 9001
 ```
@@ -39,7 +41,7 @@ docker run -dit --net host -p 80:80 -p 443:443 -v /data/htdocs:/data/htdocs -v /
 /data/nginx-php/
 ├── nginx
 │   ├── conf
-│   │   ├── cert
+│   │   ├── cert         这个目录是我用于放https证书的
 │   │   │   ├── hc.key
 │   │   │   └── hc.pem
 │   │   ├── include
@@ -136,115 +138,7 @@ zmq
 Zend OPcache
 ```
 
-		**编译参数**
-```
-Configure Command =>  
-
-./configure
---build=x86_64-alpine-linux-musl
---host=x86_64-alpine-linux-musl
---prefix=/usr
---program-suffix=7
---libdir=/usr/lib/php7
---datadir=/usr/share/php7
---sysconfdir=/etc/php7
---localstatedir=/var
---with-layout=GNU
---with-pic
---with-pear=/usr/share/php7
---with-config-file-path=/etc/php7
---with-config-file-scan-dir=/etc/php7/conf.d
---disable-short-tags
---enable-bcmath=shared
---with-bz2=shared
---enable-calendar=shared
---enable-ctype=shared
---with-curl=shared
---enable-dba=shared
---with-db4
---with-dbmaker=shared
---with-gdbm
---enable-dom=shared
---with-enchant=shared
---enable-exif=shared
---enable-fileinfo=shared
---enable-ftp=shared
---with-gd=shared
---with-freetype-dir=/usr
---disable-gd-jis-conv
---with-jpeg-dir=/usr
---with-png-dir=/usr
---with-webp-dir=/usr
---with-xpm-dir=/usr
---with-gettext=shared
---with-gmp=shared
---with-iconv=shared
---with-imap=shared
---with-imap-ssl
---with-icu-dir=/usr
---enable-intl=shared
---enable-json=shared
---with-kerberos
---with-ldap=shared
---with-ldap-sasl
---with-libedit
---enable-libxml
---with-libxml-dir=/usr
---enable-mbstring=shared
---with-mysqli=shared,mysqlnd
---with-mysql-sock=/run/mysqld/mysqld.sock
---enable-mysqlnd=shared
---enable-opcache=shared
---with-openssl=shared
---with-system-ciphers
---enable-pcntl=shared
---with-pcre-regex=/usr
---enable-pdo=shared
---with-pdo-dblib=shared
---with-pdo-mysql=shared,mysqlnd
---with-pdo-odbc=shared,unixODBC,/usr
---with-pdo-pgsql=shared
---with-pdo-sqlite=shared,/usr
---with-pgsql=shared
---enable-phar=shared
---enable-posix=shared
---with-pspell=shared
---without-readline
---with-recode=shared
---enable-session=shared
---enable-shmop=shared
---enable-simplexml=shared
---with-snmp=shared
---enable-soap=shared
---with-sodium=shared
---enable-sockets=shared
---with-sqlite3=shared,/usr
---enable-sysvmsg=shared
---enable-sysvsem=shared
---enable-sysvshm=shared
---with-tidy=shared
---enable-tokenizer=shared
---with-unixODBC=shared,/usr
---enable-wddx=shared
---enable-xml=shared
---enable-xmlreader=shared
---with-xmlrpc=shared
---enable-xmlwriter=shared
---with-xsl=shared
---enable-zip=shared
---with-libzip=/usr
---with-zlib
---with-zlib-dir=/usr
---disable-phpdbg
---enable-fpm
---enable-embed
---with-litespeed
-build_alias=x86_64-alpine-linux-musl
-host_alias=x86_64-alpine-linux-musl
-```
-
-		**默认的php.ini**
-
+		**默认的php.ini文件**
 ```
 [PHP]
 engine = On
@@ -259,7 +153,7 @@ disable_functions =
 disable_classes =
 zend.enable_gc = On
 expose_php = On
-max_execution_time = 30
+max_execution_time = 40
 max_input_time = 60
 memory_limit = 128M
 error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT
@@ -356,7 +250,7 @@ session.use_only_cookies = 1
 session.name = PHPSESSID
 session.auto_start = 0
 session.cookie_lifetime = 0
-session.cookie_path = /
+session.cookie_path = /data/php/session/
 session.cookie_domain =
 session.cookie_httponly =
 session.serialize_handler = php
@@ -380,7 +274,7 @@ zend.assertions = -1
 tidy.clean_output = Off
 [soap]
 soap.wsdl_cache_enabled=1
-soap.wsdl_cache_dir="/tmp"
+soap.wsdl_cache_dir="/data/php/tmp"
 soap.wsdl_cache_ttl=86400
 soap.wsdl_cache_limit = 5
 [sysvshm]
@@ -394,26 +288,171 @@ opcache.file_cache=/data/php/tmp/
 [openssl]
 ```
 
-
 		**默认的php-fpm.conf**
 
 ```
 [global]
-pid = run/php-fpm7.pid
+pid = /data/php/conf/php-fpm7.pid
 daemonize = no
-include=/etc/php7/php-fpm.d/*.conf
+include=/data/php/conf/php-fpm.d/*.conf
+
 ```
 
-		**默认的php-fpm.d/www.conf**
+
+		**默认的php-fpm.d/wwww.conf**
 
 ```
 [www]
 user = nobody
 group = nobody
-listen = 9000
+listen = /data/php/conf/php.sock
 pm = dynamic
-pm.max_children = 5
-pm.start_servers = 2
-pm.min_spare_servers = 1
-pm.max_spare_servers = 3
+pm.max_children = 36 
+pm.start_servers = 12
+pm.min_spare_servers = 12
+pm.max_spare_servers = 24
+
+```
+
+		**默认的nginx.conf**
+
+```
+worker_processes 2;
+worker_cpu_affinity auto;
+worker_rlimit_nofile 65530;
+error_log  /var/log/nginx/nginx_error.log  crit;
+
+events
+{
+  use epoll;
+  worker_connections 65530;
+}
+
+http {
+    default_type  application/octet-stream;
+    sendfile on;
+    tcp_nopush on;
+    keepalive_timeout 60;
+    tcp_nodelay on;
+    server_tokens off;
+    server_names_hash_bucket_size 128;
+    client_header_buffer_size 32k;
+    large_client_header_buffers 4 32k;
+    client_max_body_size 8m;
+
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for" "$request_time"';
+
+    log_format  post  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for" "$request_time" "$request_body"';
+
+    access_log  /data/nginx/logs/access.log  main;
+
+
+    gzip  on;
+    gzip_min_length 1k;
+    gzip_buffers 16 64k;
+    gzip_http_version 1.1;
+    gzip_comp_level 6;
+    gzip_types text/plain application/x-javascript text/css application/xml;
+    gzip_vary on;
+
+    limit_req_zone $binary_remote_addr zone=one:3m rate=1r/s;
+    limit_req_zone $binary_remote_addr $uri zone=two:3m rate=1r/s;
+    limit_req_zone $binary_remote_addr $request_uri zone=thre:3m rate=1r/s;
+    include /etc/nginx/conf.d/*.conf;
+}
+
+
+```
+
+		**默认的localhost.conf**
+
+```
+server {
+    listen 80;
+    server_name  localhost;
+    root "/data/htdocs";
+    index index.html index.htm index.php;
+
+    charset utf-8;
+
+    add_header Strict-Transport-Security max-age=63072000;
+    add_header X-Frame-Options DENY;
+    add_header X-Content-Type-Options nosniff;
+
+    gzip on;
+    gzip_min_length 1k;
+    gzip_comp_level 2;
+    gzip_types application/json text/plain application/javascript application/x-javascript text/css application/xml text/javascript application/x-httpd-php image/jpeg image/gif image/png;
+    gzip_vary on;
+
+    if  ( $uri ~* "^/favicon\.ico" ) {
+        break;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location = /robots.txt  { access_log off; log_not_found off; }
+
+    access_log /data/nginx/logs/localhost-access.log main;
+    error_log  /data/nginx/logs/localhost-error.log error;
+
+    sendfile off;
+
+    client_max_body_size 100m;
+
+    location ~ \.php$ {
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass unix:/data/php/conf/php.sock;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        fastcgi_param DOCUMENT_ROOT $realpath_root;
+        fastcgi_intercept_errors off;
+        fastcgi_buffer_size 16k;
+        fastcgi_buffers 4 16k;
+        fastcgi_connect_timeout 300;
+        fastcgi_send_timeout 300;
+        fastcgi_read_timeout 300;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+}
+
+
+
+```
+
+
+		**默认的supervisord.conf**
+
+```
+[inet_http_server]
+port=9001
+username=root
+password=123456
+
+[supervisord]
+nodaemon=true
+logfile=/data/supervisor/logs/supervisord.log ; 
+pidfile=/data/supervisor/supervisord.pid ; 
+childlogdir=/data/supervisor/logs ;
+
+
+[program:nginx]
+command=/usr/sbin/nginx -c /data/nginx/conf/nginx.conf -g "daemon off;"
+stopsignal=QUIT
+[program:php-fpm]
+command=/usr/bin/php-fpm -c /data/php/conf/php.ini -y /data/php/conf/php-fpm.conf --nodaemonize
+stopsignal=QUIT
+autostart=true ;
+autorestart=true ;
+
 ```
