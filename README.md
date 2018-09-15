@@ -45,7 +45,7 @@ docker run -dit --net host -p 80:80 -p 443:443 -v /data/htdocs:/data/htdocs -v /
 │   │   │   ├── hc.key
 │   │   │   └── hc.pem
 │   │   ├── include
-│   │   │   └── test.conf
+│   │   │   └── localhost.conf
 │   │   └── nginx.conf
 │   ├── logs
 │   └── tmp
