@@ -9,7 +9,6 @@ docker pull w303972870/nginx-php
 #### 默认php.ini：/data/php/conf/php.ini
 #### 默认缓存目录：/data/php/tmp/
 #### session目录：/data/php/session/
-### 开放端口：9000
 
 
 ### Nginx相关目录
