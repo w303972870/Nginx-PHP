@@ -77,8 +77,13 @@ curl -sS https://getcomposer.org/installer | php7 -- --install-dir=/usr/bin --fi
     && sed -i "s|;error_log = php_errors.log|error_log = /data/php/logs/php_errors.log|" /etc/php7/php.ini  \ 
     && sed -i "s|;;opcache.enable=1|opcache.enable=1|" /etc/php7/php.ini  \ 
     && sed -i "s|;date.timezone =|date.timezone = ${TIMEZONE}|" /etc/php7/php.ini  \ 
-    && sed -i "s|listen = 127.0.0.1:9000|listen = /data/php/conf/php.sock|" /etc/php7/php-fpm.d/www.conf   \ 
+    && sed -i "s|listen = 127.0.0.1:9000|listen = /dev/shm/php.sock|" /etc/php7/php-fpm.d/www.conf   \ 
+    && sed -i "s|;listen.owner = nobody|listen.owner = nobody|" /etc/php7/php-fpm.d/www.conf   \ 
+    && sed -i "s|;listen.group = nobody|listen.group = nobody|" /etc/php7/php-fpm.d/www.conf   \ 
+    && sed -i "s|;listen.mode = 0660|listen.mode = 0660|" /etc/php7/php-fpm.d/www.conf   \ 
     && sed -i "s|;pid = run/php-fpm7.pid|pid = /data/php/conf/php-fpm7.pid|" /etc/php7/php-fpm.conf \
+    && sed -i "s|;error_log = log/php7/error.log|error_log = /data/php/logs/error.log|" /etc/php7/php-fpm.conf \
+    && sed -i "s|include=/etc/php7/php-fpm.d/*.conf|include=/data/php/conf/php-fpm.d/*.conf|" /etc/php7/php-fpm.conf \
     && cp /etc/php7/php-fpm.conf /data/php/conf/ && cp /etc/php7/php-fpm.d/www.conf /data/php/conf/php-fpm.d/ \
     && cp /etc/php7/php.ini /data/php/conf/ &&  apk add --no-cache --virtual .build-deps \
         gcc \
@@ -129,6 +134,7 @@ curl -sS https://getcomposer.org/installer | php7 -- --install-dir=/usr/bin --fi
     && \cp /root/nginx.conf /data/nginx/conf/nginx.conf && \cp /root/localhost.conf /data/nginx/conf/conf.d/default.conf \
     && ln -s /usr/sbin/php-fpm7 /usr/bin/php-fpm 
 ADD supervisord.conf /data/supervisor/conf/
+ADD fastcgi_params /data/nginx/conf/
 
 EXPOSE 9000 9001 80 443
 

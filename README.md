@@ -14,7 +14,8 @@ docker pull w303972870/nginx-php
 ### Nginx相关目录
 #### 日志目录：/data/nginx/logs
 #### 默认php-fpm.conf：/data/nginx/conf/nginx.conf
-#### 默认*.conf目录：/data/nginx/conf/include/
+#### 默认nginx.conf目录（fastcgi_params文件自行建立）：/data/nginx/conf/
+#### 默认*.conf目录：/data/nginx/conf/conf.d/
 #### client_temp目录：/data/nginx/tmp/client_temp
 #### fastcgi_temp目录：/data/nginx/tmp/fastcgi_temp
 #### proxy_temp目录：/data/nginx/tmp/proxy_temp
@@ -292,6 +293,7 @@ opcache.file_cache=/data/php/tmp/
 ```
 [global]
 pid = /data/php/conf/php-fpm7.pid
+error_log = /data/php/logs/error.log
 daemonize = no
 include=/data/php/conf/php-fpm.d/*.conf
 
@@ -304,7 +306,10 @@ include=/data/php/conf/php-fpm.d/*.conf
 [www]
 user = nobody
 group = nobody
-listen = /data/php/conf/php.sock
+listen = /dev/shm/php.sock
+listen.owner = nobody
+listen.group = nobody
+listen.mode = 0660
 pm = dynamic
 pm.max_children = 36 
 pm.start_servers = 12
@@ -319,7 +324,7 @@ pm.max_spare_servers = 24
 worker_processes 2;
 worker_cpu_affinity auto;
 worker_rlimit_nofile 65530;
-error_log  /var/log/nginx/nginx_error.log  crit;
+error_log  /data/nginx/logs/nginx_error.log  crit;
 
 events
 {
@@ -328,6 +333,7 @@ events
 }
 
 http {
+    include       mime.types;
     default_type  application/octet-stream;
     sendfile on;
     tcp_nopush on;
@@ -361,13 +367,12 @@ http {
     limit_req_zone $binary_remote_addr zone=one:3m rate=1r/s;
     limit_req_zone $binary_remote_addr $uri zone=two:3m rate=1r/s;
     limit_req_zone $binary_remote_addr $request_uri zone=thre:3m rate=1r/s;
-    include /etc/nginx/conf.d/*.conf;
+    include /data/nginx/conf/conf.d/*.conf;
 }
-
 
 ```
 
-		**默认的localhost.conf**
+		**默认的default.conf**
 
 ```
 server {
@@ -408,7 +413,7 @@ server {
 
     location ~ \.php$ {
         fastcgi_split_path_info ^(.+\.php)(/.+)$;
-        fastcgi_pass unix:/data/php/conf/php.sock;
+        fastcgi_pass unix:/dev/shm/php.sock;
         include fastcgi_params;
         fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
         fastcgi_param DOCUMENT_ROOT $realpath_root;
@@ -444,14 +449,16 @@ logfile=/data/supervisor/logs/supervisord.log ;
 pidfile=/data/supervisor/supervisord.pid ; 
 childlogdir=/data/supervisor/logs ;
 
-
-[program:nginx]
-command=/usr/sbin/nginx -c /data/nginx/conf/nginx.conf -g "daemon off;"
-stopsignal=QUIT
 [program:php-fpm]
 command=/usr/bin/php-fpm -c /data/php/conf/php.ini -y /data/php/conf/php-fpm.conf --nodaemonize
 stopsignal=QUIT
 autostart=true ;
 autorestart=true ;
+
+
+[program:nginx]
+command=/usr/sbin/nginx -c /data/nginx/conf/nginx.conf -g "daemon off;"
+stopsignal=QUIT
+
 
 ```
