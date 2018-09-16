@@ -435,7 +435,7 @@ server {
 ```
 
 
-		**默认的supervisord.conf**
+		**默认的supervisord.conf（';'前必须有一个空格的）**
 
 ```
 [inet_http_server]
