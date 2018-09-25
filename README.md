@@ -439,7 +439,7 @@ server {
 
 ```
 [inet_http_server]
-port=9001
+port=*:9001
 username=root
 password=123456
 
