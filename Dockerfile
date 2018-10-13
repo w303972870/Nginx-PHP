@@ -118,7 +118,7 @@ curl -sS https://getcomposer.org/installer | php7 -- --install-dir=/usr/bin --fi
     && cp -R /usr/src/jieba/phpjieba/cjieba/dict/* /data/jieba/dict \
     && cd /usr/src/ && wget http://www.xunsearch.com/scws/down/scws-1.2.3.tar.bz2 \
     && tar jxf scws-1.2.3.tar.bz2 && cd scws-1.2.3 && ./configure --sysconfdir=/data/scws/etc \
-    && make && make install && cd phpext && phpize && ./configure --with-scws=/usr/local/scws \
+    && make && make install && cd phpext && phpize && ./configure \
     && make && make install \
 
     && rm -rf /etc/nginx/html/ \
@@ -136,7 +136,7 @@ curl -sS https://getcomposer.org/installer | php7 -- --install-dir=/usr/bin --fi
             | sort -u \
     )" \
     && apk add --virtual .nginx-rundeps $runDeps supervisor \
-    && apk del .build-deps && apk del make wget curl gcc libc-dev openssl-dev pcre-dev zlib-dev linux-headers geoip-dev libxml2-dev libxslt-dev gd-dev lua-dev jemalloc-dev && rm -rf /var/cache/apk/* \
+    && apk del .build-deps && apk del make wget php7-dev curl gcc libc-dev openssl-dev pcre-dev zlib-dev linux-headers geoip-dev libxml2-dev libxslt-dev gd-dev lua-dev jemalloc-dev && rm -rf /var/cache/apk/* \
     && rm -rf /usr/src/tengine-$TENGINE_VERSION  \
     && apk add --no-cache gettext \
     \
