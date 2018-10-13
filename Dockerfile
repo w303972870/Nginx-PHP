@@ -56,9 +56,9 @@ ENV CONFIG "\
 	--with-sha1-asm \  
 	--with-http_dyups_lua_api "
 
-RUN mkdir -p /data/php/conf/php-fpm.d/ && mkdir -p /data/php/tmp/ && mkdir -p /data/php/logs && \
+RUN mkdir -p /data/php/conf/php-fpm.d/ && mkdir -p /data/php/tmp/ && mkdir -p /data/php/logs \
     && echo 'ls -l $1' > /usr/bin/ll \
-    mkdir -p /data/nginx/logs /var/run/nginx/ /data/nginx/tmp//uwsgi /data/nginx/tmp//proxy /data/nginx/tmp//scgi /data/htdocs /data/supervisor/logs/ /data/supervisor/conf/ && apk update && \
+    && mkdir -p /data/nginx/logs /var/run/nginx/ /data/nginx/tmp//uwsgi /data/nginx/tmp//proxy /data/nginx/tmp//scgi /data/htdocs /data/supervisor/logs/ /data/supervisor/conf/ && apk update && \
   apk add tzdata curl && \
   cp /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
   echo "${TIMEZONE}" > /etc/timezone && \
