@@ -95,6 +95,7 @@ hash
 iconv
 **imagick**
 intl
+jieba
 json
 ldap
 libxml
@@ -115,6 +116,7 @@ posix
 readline
 **redis**
 Reflection
+scws
 session
 shmop
 soap
@@ -188,6 +190,14 @@ max_file_uploads = 200
 allow_url_fopen = On
 allow_url_include = Off
 default_socket_timeout = 60
+
+
+extension=/usr/lib/php7/modules/jieba.so
+jieba.enable=1
+jieba.dict_path=/data/jieba/dict
+
+
+
 [CLI Server]
 cli_server.color = On
 [Date]
@@ -289,6 +299,11 @@ opcache.enable_cli=1
 opcache.file_cache=/data/php/tmp/
 [curl]
 [openssl]
+
+[scws] 
+extension = /usr/lib/php7/modules/scws.so 
+scws.default.charset = utf8 
+scws.default.fpath = /data/scws/etc 
 ```
 
 		**默认的php-fpm.conf**
