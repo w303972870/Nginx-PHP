@@ -95,7 +95,7 @@ curl -sS https://getcomposer.org/installer | php7 -- --install-dir=/usr/bin --fi
         zlib-dev \
         linux-headers geoip-dev \
         curl libxml2-dev libxslt-dev gd-dev git \
-	    lua-dev make cmake \
+	    lua-dev make cmake re2c \
         jemalloc-dev \
     && curl "http://tengine.taobao.org/download/tengine-$TENGINE_VERSION.tar.gz" -o tengine.tar.gz \
     && mkdir -p /usr/src \
