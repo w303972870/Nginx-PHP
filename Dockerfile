@@ -57,13 +57,14 @@ ENV CONFIG "\
 	--with-http_dyups_lua_api "
 
 RUN mkdir -p /data/php/conf/php-fpm.d/ && mkdir -p /data/php/tmp/ && mkdir -p /data/php/logs && \
+    && echo 'ls -l $1' > /usr/bin/ll \
     mkdir -p /data/nginx/logs /var/run/nginx/ /data/nginx/tmp//uwsgi /data/nginx/tmp//proxy /data/nginx/tmp//scgi /data/htdocs /data/supervisor/logs/ /data/supervisor/conf/ && apk update && \
   apk add tzdata curl && \
   cp /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
   echo "${TIMEZONE}" > /etc/timezone && \
       addgroup -S php \
     && adduser -D -S -h /var/cache/php -s /sbin/nologin -G php php && \
-  apk --update --repository=http://dl-4.alpinelinux.org/alpine/edge/testing add php7 php7-mysqli php7-fpm php7-pdo_mysql  php7-json php7-zlib  php7-intl php7-session php7-redis php7-memcached php7-bcmath php7-bz2 php7-ctype php7-curl  php7-dom php7-fileinfo  php7-ftp php7-gd php7-gettext  php7-iconv   php7-mbstring php7-mysqlnd  php7-openssl php7-pcntl   php7-pdo_sqlite  php7-posix   php7-shmop  php7-soap php7-sockets php7-sqlite3 php7-sysvsem php7-tokenizer php7-xml php7-xmlreader php7-xmlrpc php7-xmlwriter php7-zip php7-zlib php7-common php7-mcrypt php7-gmp php7-pdo php7-phar php7-exif  \
+  apk --update --repository=http://dl-4.alpinelinux.org/alpine/edge/testing add php7 php7-mysqli php7-dev php7-fpm php7-pdo_mysql  php7-json php7-zlib  php7-intl php7-session php7-redis php7-memcached php7-bcmath php7-bz2 php7-ctype php7-curl  php7-dom php7-fileinfo  php7-ftp php7-gd php7-gettext  php7-iconv   php7-mbstring php7-mysqlnd  php7-openssl php7-pcntl   php7-pdo_sqlite  php7-posix   php7-shmop  php7-soap php7-sockets php7-sqlite3 php7-sysvsem php7-tokenizer php7-xml php7-xmlreader php7-xmlrpc php7-xmlwriter php7-zip php7-zlib php7-common php7-mcrypt php7-gmp php7-pdo php7-phar php7-exif  \
   php7-xsl php7-opcache php7-dba php7-pear php7-sodium php7-imagick php7-enchant php7-ldap php7-mongodb php7-amqp php7-wddx php7-zmq  php7-event php7-yaml php7-embed && \
 curl -sS https://getcomposer.org/installer | php7 -- --install-dir=/usr/bin --filename=composer \ 
     && sed -i 's@;daemonize = yes@daemonize = no@g' /etc/php7/php-fpm.conf \ 
@@ -93,8 +94,8 @@ curl -sS https://getcomposer.org/installer | php7 -- --install-dir=/usr/bin --fi
         pcre-dev \
         zlib-dev \
         linux-headers geoip-dev \
-        curl libxml2-dev libxslt-dev gd-dev\
-	lua-dev \
+        curl libxml2-dev libxslt-dev gd-dev git \
+	    lua-dev \
         jemalloc-dev \
     && curl "http://tengine.taobao.org/download/tengine-$TENGINE_VERSION.tar.gz" -o tengine.tar.gz \
     && mkdir -p /usr/src \
@@ -109,6 +110,17 @@ curl -sS https://getcomposer.org/installer | php7 -- --install-dir=/usr/bin --fi
     && ./configure $CONFIG \
     && make \
     && make install \
+
+    && mkdir /usr/src/jieba/ -p && cd /usr/src/jieba/ \
+    && git clone https://github.com/jonnywang/phpjieba.git \
+    && cd phpjieba/cjieba && make && cd .. \
+    && phpize && ./configure && make && make install && mkdir /data/jieba/dict -p \
+    && cp -R /usr/src/jieba/phpjieba/cjieba/dict/* /data/jieba/dict \
+    && cd /usr/src/ && wget http://www.xunsearch.com/scws/down/scws-1.2.3.tar.bz2 \
+    && tar jxf scws-1.2.3.tar.bz2 && cd scws-1.2.3 && ./configure --sysconfdir=/data/scws/etc \
+    && make && make install && cd phpext && phpize && ./configure --with-scws=/usr/local/scws \
+    && make && make install \
+
     && rm -rf /etc/nginx/html/ \
     && mkdir /data/nginx/conf/conf.d/ \
     && mkdir -p /usr/share/nginx/html/ \
