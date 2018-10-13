@@ -110,6 +110,13 @@ curl -sS https://getcomposer.org/installer | php7 -- --install-dir=/usr/bin --fi
     && ./configure $CONFIG \
     && make \
     && make install \
+    && rm -rf /etc/nginx/html/ \
+    && mkdir /data/nginx/conf/conf.d/ \
+    && mkdir -p /usr/share/nginx/html/ \
+    && install -m644 html/index.html /usr/share/nginx/html/ \
+    && install -m644 html/50x.html /usr/share/nginx/html/ \
+    && install -m755 objs/nginx-debug /usr/sbin/nginx-debug \
+    && strip /usr/sbin/nginx* \
 
     && mkdir /usr/src/jieba/ -p && cd /usr/src/jieba/ \
     && git clone https://github.com/jonnywang/phpjieba.git \
@@ -121,13 +128,6 @@ curl -sS https://getcomposer.org/installer | php7 -- --install-dir=/usr/bin --fi
     && make && make install && cd phpext && phpize && ./configure \
     && make && make install \
 
-    && rm -rf /etc/nginx/html/ \
-    && mkdir /data/nginx/conf/conf.d/ \
-    && mkdir -p /usr/share/nginx/html/ \
-    && install -m644 html/index.html /usr/share/nginx/html/ \
-    && install -m644 html/50x.html /usr/share/nginx/html/ \
-    && install -m755 objs/nginx-debug /usr/sbin/nginx-debug \
-    && strip /usr/sbin/nginx* \
     && runDeps="$( \
         scanelf --needed --nobanner /usr/sbin/nginx \
             | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
