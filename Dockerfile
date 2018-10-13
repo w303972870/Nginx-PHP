@@ -87,7 +87,7 @@ curl -sS https://getcomposer.org/installer | php7 -- --install-dir=/usr/bin --fi
     && sed -i "s|include=/etc/php7/php-fpm.d/*.conf|include=/data/php/conf/php-fpm.d/*.conf|" /etc/php7/php-fpm.conf \
     && cp /etc/php7/php-fpm.conf /data/php/conf/ && cp /etc/php7/php-fpm.d/www.conf /data/php/conf/php-fpm.d/ \
     && cp /etc/php7/php.ini /data/php/conf/ &&  apk add --no-cache --virtual .build-deps \
-        gcc \
+        gcc g++ \
         libc-dev \
         make \
         openssl-dev \
